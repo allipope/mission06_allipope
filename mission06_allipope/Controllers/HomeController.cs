@@ -34,10 +34,17 @@ namespace mission06_allipope.Controllers
         [HttpPost]
         public IActionResult MovieForm (MovieResponse mr)
         {
-            movieContext.Add(mr);
-            movieContext.SaveChanges();
+            if (ModelState.IsValid)
+            {
+                movieContext.Add(mr);
+                movieContext.SaveChanges();
+                return View("Confirmation", mr);
+            }
 
-            return View("Confirmation", mr);
+            else
+            {
+                return View();
+            }
         }
 
         public IActionResult Podcast ()
