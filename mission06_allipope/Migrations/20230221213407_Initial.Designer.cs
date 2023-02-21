@@ -8,7 +8,7 @@ using mission06_allipope.Models;
 namespace mission06_allipope.Migrations
 {
     [DbContext(typeof(MovieContext))]
-    [Migration("20230209222659_Initial")]
+    [Migration("20230221213407_Initial")]
     partial class Initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -17,15 +17,70 @@ namespace mission06_allipope.Migrations
             modelBuilder
                 .HasAnnotation("ProductVersion", "3.1.32");
 
+            modelBuilder.Entity("mission06_allipope.Models.Category", b =>
+                {
+                    b.Property<int>("CategoryID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CategoryName")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("CategoryID");
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            CategoryID = 1,
+                            CategoryName = "Action/Adventure"
+                        },
+                        new
+                        {
+                            CategoryID = 2,
+                            CategoryName = "Drama"
+                        },
+                        new
+                        {
+                            CategoryID = 3,
+                            CategoryName = "Comedy"
+                        },
+                        new
+                        {
+                            CategoryID = 4,
+                            CategoryName = "Thriller"
+                        },
+                        new
+                        {
+                            CategoryID = 5,
+                            CategoryName = "Musical"
+                        },
+                        new
+                        {
+                            CategoryID = 6,
+                            CategoryName = "Fantasy"
+                        },
+                        new
+                        {
+                            CategoryID = 7,
+                            CategoryName = "Documetary"
+                        },
+                        new
+                        {
+                            CategoryID = 8,
+                            CategoryName = "Romantic Comedy"
+                        });
+                });
+
             modelBuilder.Entity("mission06_allipope.Models.MovieResponse", b =>
                 {
                     b.Property<int>("MovieId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Category")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
+                    b.Property<int>("CategoryID")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Director")
                         .IsRequired()
@@ -54,13 +109,15 @@ namespace mission06_allipope.Migrations
 
                     b.HasKey("MovieId");
 
-                    b.ToTable("responses");
+                    b.HasIndex("CategoryID");
+
+                    b.ToTable("Responses");
 
                     b.HasData(
                         new
                         {
                             MovieId = 1,
-                            Category = "Adventure/Comedy",
+                            CategoryID = 1,
                             Director = "Taika Watiti",
                             Edited = false,
                             Rating = "pg13",
@@ -70,7 +127,7 @@ namespace mission06_allipope.Migrations
                         new
                         {
                             MovieId = 2,
-                            Category = "Comedy/Drama",
+                            CategoryID = 3,
                             Director = "Nancy Meyers",
                             Edited = false,
                             Rating = "pg13",
@@ -80,13 +137,22 @@ namespace mission06_allipope.Migrations
                         new
                         {
                             MovieId = 3,
-                            Category = "Musical",
+                            CategoryID = 5,
                             Director = "Phyllida Lloyd",
                             Edited = false,
                             Rating = "pg13",
                             Title = "Mamma Mia!",
                             Year = (short)2008
                         });
+                });
+
+            modelBuilder.Entity("mission06_allipope.Models.MovieResponse", b =>
+                {
+                    b.HasOne("mission06_allipope.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

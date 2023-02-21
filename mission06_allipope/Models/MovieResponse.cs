@@ -12,7 +12,8 @@ namespace mission06_allipope.Models
         [Required]
         public int MovieId { get; set; }
         [Required]
-        public string Category { get; set; }
+        public int CategoryID { get; set; }
+        public Category Category { get; set; }
         [Required]
         public string Title { get; set; }
         [Required]
@@ -24,6 +25,6 @@ namespace mission06_allipope.Models
         public bool Edited { get; set; }
         public string LentTo { get; set; }
         [StringLength(25)]
-        public string Notes { get; set; } // limited to 25 characters, & optional
+        public string Notes { get; set; }
     }
 }

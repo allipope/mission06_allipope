@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using mission06_allipope.Models;
 using System;
@@ -11,12 +12,11 @@ namespace mission06_allipope.Controllers
 {
     public class HomeController : Controller
     {
-        private readonly ILogger<HomeController> _logger;
         private MovieContext movieContext { get; set; }
 
-        public HomeController(ILogger<HomeController> logger, MovieContext x)
+        // Constructor
+        public HomeController(MovieContext x)
         {
-            _logger = logger;
             movieContext = x;
         }
 
@@ -28,7 +28,9 @@ namespace mission06_allipope.Controllers
         [HttpGet]
         public IActionResult MovieForm()
         {
-            return View();
+            ViewBag.Categories = movieContext.Categories.ToList();
+            
+            return View("MovieForm", new MovieResponse());
         }
 
         [HttpPost]
@@ -43,6 +45,7 @@ namespace mission06_allipope.Controllers
 
             else
             {
+                ViewBag.Categories = movieContext.Categories.ToList();
                 return View();
             }
         }
@@ -52,15 +55,49 @@ namespace mission06_allipope.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+
+        [HttpGet]
+        public IActionResult MovieList ()
         {
-            return View();
+            var movies = movieContext.Responses
+                .Include(x => x.Category)
+                .OrderBy(x => x.Title)
+                .ToList();
+            return View(movies);
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+
+        [HttpGet]
+        public IActionResult Edit (int id)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            ViewBag.Categories = movieContext.Categories.ToList();
+            var submission = movieContext.Responses.Single(x => x.MovieId == id);
+            return View("MovieForm", submission);
         }
+
+        [HttpPost]
+        public IActionResult Edit (MovieResponse blah)
+        {
+            movieContext.Update(blah);
+            movieContext.SaveChanges();
+            return RedirectToAction("MovieList");
+        }
+
+
+        [HttpGet]
+        public IActionResult Delete (int id)
+        {
+            var submission = movieContext.Responses.Single(x => x.MovieId == id);
+            return View(submission);
+        }
+
+        [HttpPost]
+        public IActionResult Delete (MovieResponse mr)
+        {
+            movieContext.Responses.Remove(mr);
+            movieContext.SaveChanges();
+            return RedirectToAction("MovieList");
+        }
+
     }
 }
